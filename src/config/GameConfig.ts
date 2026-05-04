@@ -12,7 +12,7 @@ export const GAME_CONFIG : GameConfig = {
             faction: Faction.DEFENDER,
             steeringBehaviourConfigs: [
                 {
-                    steeringBehaviour: SteeringBehaviourType.TARGET_SEEK,
+                    steeringBehaviour: SteeringBehaviourType.WANDER,
                     weight: 0.5,
                     useDebug: true
                 }

@@ -35,7 +35,7 @@ export class BoidsController {
 
     tick(allBoids: Boid[], secondsSinceStart: number): void {
         this.updateBoidReferences(allBoids, secondsSinceStart);
-        this.updateBoids();
+        this.updateBoids(secondsSinceStart);
         this.drawBoids();
         this.drawDebug();
     }
@@ -72,9 +72,9 @@ export class BoidsController {
             debugShapes[i].drawShape(this.graphics);
     }
 
-     updateBoids(): void {
+     updateBoids(secondsSinceStart:number): void {
         for(let i: number = 0; i < this.boids.length; ++i){
-            this.steeringCtx = this.steeringController.updateBoid(this.boids[i], this.targetPos);
+            this.steeringCtx = this.steeringController.updateBoid(this.boids[i], secondsSinceStart, this.targetPos);
             this.wrapAround(this.boids[i]);
         }
     }

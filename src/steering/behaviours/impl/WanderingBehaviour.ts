@@ -2,37 +2,44 @@ import type {SteeringContext} from "../../model/SteeringContext.ts";
 import type {Boid} from "../../../model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 import type {SteeringBehaviour} from "../SteeringBehaviour.ts";
+import {DebugCircle} from "../../model/DebugShape.ts";
+import {Colors} from "../../../constants/Colour.ts";
+import Phaser from "phaser";
+
+const PROJECTED_POINT_BULLSEYE_RADIUS = 5;
+const PROJECTED_WANDER_POINT_DEBUG_RADIUS = 15;
 
 const WANDER_RADIUS = 50;
 const LOOK_AHEAD_DIST = 100;
 
 export class WanderingBehaviour implements SteeringBehaviour {
 
-    steer(steeringContext: SteeringContext, boid: Boid, weight: number, debugOutput: boolean){
+    steer(steeringContext: SteeringContext, boid: Boid, secondsSinceStart: number, weight: number, debugOutput: boolean){
 
         const boidPos: Vector2 = boid.pos;
         const dir: Vector2 = boid.velocity.clone().normalize();
         const projectedPoint: Vector2 = dir.scale(LOOK_AHEAD_DIST);
-        projectedPoint.add(boidPos); // can now draw a circle at projected position, need debug graphics
+        projectedPoint.add(boidPos);
 
-        let theta: number = Math.PI / 2;
+        const maxOffset = Math.PI / 4;
+        const seed = boid.pos.x * 0.01 + boid.pos.y * 0.01;
 
-        let x: number = WANDER_RADIUS * Math.cos(theta);
-        let y: number = WANDER_RADIUS * Math.sin(theta);
+        const theta = boid.velocity.angle() + Math.sin(secondsSinceStart + seed) * maxOffset;
 
-        // projectedPoint.x + x, projectedPoint.y + y for the target placed on the circle
+        const wanderX: number = WANDER_RADIUS * Math.cos(theta);
+        const wanderY: number = WANDER_RADIUS * Math.sin(theta);
 
-        // projectedPoint.Add(x,y) -> amends the projected point
+        const projectedWanderPoint = new Vector2(wanderX + projectedPoint.x, wanderY + projectedPoint.y);
 
-        let steeringVelocity: Vector2 = projectedPoint.subtract(boidPos); // steering force
+        const steeringVelocity: Vector2 = projectedPoint.subtract(boidPos); // steering force
 
+        if(debugOutput){
+            steeringContext.pushDebugShape(new DebugCircle(Colors.RED, PROJECTED_WANDER_POINT_DEBUG_RADIUS, projectedPoint))
+            steeringContext.pushDebugShape(new DebugCircle(Colors.WHITE, WANDER_RADIUS, projectedPoint));
+            steeringContext.pushDebugShape(new DebugCircle(Colors.GREEN, PROJECTED_WANDER_POINT_DEBUG_RADIUS, projectedWanderPoint));
+        }
 
-        // push debug shapes to ctx, return ctx to boids controller
-        // draw debug shapes from boids controller
-
-
-        
-        // steeringContext.putInterestForVelocity(heading.clone().scale(desiredSpeed), this.weightResolver);
+        steeringContext.putInterestForVelocity(steeringVelocity, weight);
     }
 
 }

@@ -6,6 +6,7 @@ import { Boid } from "../model/Boid.ts";
 import {SteeringBehaviourType} from "./constants/SteeringBehaviourType.ts";
 import type {SteeringBehaviour} from "./behaviours/SteeringBehaviour.ts";
 import Phaser from "phaser";
+import {WanderingBehaviour} from "./behaviours/impl/WanderingBehaviour.ts";
 
 export class SteeringController {
 
@@ -16,10 +17,11 @@ export class SteeringController {
         this.steeringBehaviourConfigs = steeringBehaviourConfigs;
         this.mappedSteeringBehaviours = {
             [SteeringBehaviourType.TARGET_SEEK]: new TargetSteeringBehaviour(),
+            [SteeringBehaviourType.WANDER]: new WanderingBehaviour()
         };
     }
 
-    updateBoid(boid: Boid, target?: Vector2): SteeringContext {
+    updateBoid(boid: Boid, secondsSinceStart:number, target?: Vector2): SteeringContext {
         const ctx = new SteeringContext(target);
 
         for(let i: number = 0; i < this.steeringBehaviourConfigs.length; ++i){
@@ -32,7 +34,7 @@ export class SteeringController {
 
             console.log(`running steering for ${steeringBehaviour}`);
 
-            mappedBehaviour.steer(ctx, boid, weight, useDebug);
+            mappedBehaviour.steer(ctx, boid, secondsSinceStart, weight, useDebug);
         }
 
         const desiredVelocity: Vector2 = ctx.desiredVelocity();

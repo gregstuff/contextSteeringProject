@@ -8,7 +8,7 @@ const MAX_SPEED_DIST = 30;
 
 export class TargetSteeringBehaviour implements SteeringBehaviour {
 
-    steer(steeringContext: SteeringContext, boid: Boid, weight: number, debugOutput: boolean){
+    steer(steeringContext: SteeringContext, boid: Boid, secondsSinceStart:number, weight: number, debugOutput: boolean){
 
         const { target } = steeringContext;
 
