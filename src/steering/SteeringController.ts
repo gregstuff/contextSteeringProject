@@ -7,6 +7,7 @@ import {SteeringBehaviourType} from "./constants/SteeringBehaviourType.ts";
 import type {SteeringBehaviour} from "./behaviours/SteeringBehaviour.ts";
 import Phaser from "phaser";
 import {WanderingBehaviour} from "./behaviours/impl/WanderingBehaviour.ts";
+import {SelfFactionSeek} from "./behaviours/impl/SelfFactionSeek.ts";
 
 export class SteeringController {
 
@@ -17,7 +18,8 @@ export class SteeringController {
         this.steeringBehaviourConfigs = steeringBehaviourConfigs;
         this.mappedSteeringBehaviours = {
             [SteeringBehaviourType.TARGET_SEEK]: new TargetSteeringBehaviour(),
-            [SteeringBehaviourType.WANDER]: new WanderingBehaviour()
+            [SteeringBehaviourType.WANDER]: new WanderingBehaviour(),
+            [SteeringBehaviourType.SELF_FACTION_SEEK]: new SelfFactionSeek(),
         };
     }
 
@@ -31,8 +33,6 @@ export class SteeringController {
             const mappedBehaviour = this.mappedSteeringBehaviours[steeringBehaviour];
 
             if(!mappedBehaviour) throw Error(`No behaviour mapped for: ${steeringBehaviour}`);
-
-            console.log(`running steering for ${steeringBehaviour}`);
 
             mappedBehaviour.steer(ctx, boid, secondsSinceStart, weight, useDebug);
         }

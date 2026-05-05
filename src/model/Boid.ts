@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import type {Faction} from "../constants/Faction.ts";
+import type {BoidBlackboard} from "./BoidBlackboard.ts";
 
-const CLOSE_DISTANCE = 50;
-const MEDIUM_DISTANCE = 100;
-const FAR_DISTANCE = 150;
+export const CLOSE_DISTANCE = 50;
+export const MEDIUM_DISTANCE = 100;
+export const FAR_DISTANCE = 150;
 
 export class Boid {
 
@@ -15,6 +16,7 @@ export class Boid {
     maximumSpeed: number;
     maximumForce: number;
     target: Phaser.Math.Vector2 | undefined;
+    blackboard: BoidBlackboard;
 
     closeDistanceEnemies: Boid[];
     mediumDistanceEnemies: Boid[];
@@ -39,6 +41,14 @@ export class Boid {
         this.maximumSpeed = maximumSpeed;
         this.maximumForce = maximumForce;
         this.target = undefined;
+
+        this.blackboard = {
+            wanderAngle: Math.random() * Math.PI * 2,
+            selfFactionSeekPoint: undefined,
+            selfFactionSeekLastCacheSeconds: undefined,
+            selfFactionFleeLastCacheSeconds: undefined,
+            selfFactionFleePoint: undefined
+        };
 
         this.closeDistanceEnemies = [];
         this.mediumDistanceEnemies = [];
