@@ -31,7 +31,7 @@ export class SelfFactionFlee implements SteeringBehaviour {
 
         const lastCache = boid.blackboard.selfFactionFleeLastCacheSeconds;
 
-        if(!lastCache || lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
+        if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
         const resolvedFriendlies: Boid[] = [...boid.closeDistanceFriendlies];
 

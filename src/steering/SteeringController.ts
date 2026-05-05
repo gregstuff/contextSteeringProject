@@ -8,6 +8,8 @@ import type {SteeringBehaviour} from "./behaviours/SteeringBehaviour.ts";
 import Phaser from "phaser";
 import {WanderingBehaviour} from "./behaviours/impl/WanderingBehaviour.ts";
 import {SelfFactionSeek} from "./behaviours/impl/SelfFactionSeek.ts";
+import {Alignment} from "./behaviours/impl/Alignment.ts";
+import {SelfFactionFlee} from "./behaviours/impl/SelfFactionFlee.ts";
 
 export class SteeringController {
 
@@ -20,6 +22,8 @@ export class SteeringController {
             [SteeringBehaviourType.TARGET_SEEK]: new TargetSteeringBehaviour(),
             [SteeringBehaviourType.WANDER]: new WanderingBehaviour(),
             [SteeringBehaviourType.SELF_FACTION_SEEK]: new SelfFactionSeek(),
+            [SteeringBehaviourType.SELF_FACTION_FLEE]: new SelfFactionFlee(),
+            [SteeringBehaviourType.ALIGNMENT]: new Alignment(),
         };
     }
 

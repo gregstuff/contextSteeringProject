@@ -18,6 +18,8 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
         const relevantVelocity = selfFactionSeekPoint.clone().subtract(boid.pos.clone());
 
+        const distanceFromTarget: number = relevantVelocity.length();
+
         let desiredSpeed: number = boid.maximumSpeed;
 
         if(distanceFromTarget < MAX_SPEED_DIST){
@@ -32,7 +34,7 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
         const lastCache = boid.blackboard.selfFactionSeekLastCacheSeconds;
 
-        if(!lastCache || lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
+        if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
         const allFriendlies: Boid[] = [...boid.closeDistanceFriendlies, ...boid.mediumDistanceFriendlies];
 

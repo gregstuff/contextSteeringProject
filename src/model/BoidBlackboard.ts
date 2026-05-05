@@ -6,4 +6,6 @@ export type BoidBlackboard = {
     selfFactionSeekPoint: Vector2 | undefined;
     selfFactionFleeLastCacheSeconds: number | undefined;
     selfFactionFleePoint: Vector2 | undefined;
+    alignmentCacheSeconds: number | undefined;
+    alignmentVector: Vector2 | undefined;
 }
