@@ -114,11 +114,12 @@ export class BoidsController {
     addBoid(startingPos: Vector2): void {
         const { maximumSpeed, size, maximumForce, faction } = this.config;
 
+        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+
         const startingVelocity = new Phaser.Math.Vector2(
-            Phaser.Math.Between(0, 1), 
-            Phaser.Math.Between(0, 1))
-            .normalize()
-            .scale(maximumSpeed);
+            Math.cos(angle),
+            Math.sin(angle)
+        ).scale(maximumSpeed);
 
         this.boids.push(new Boid(startingPos, startingVelocity, size, faction, maximumSpeed, maximumForce));
     }

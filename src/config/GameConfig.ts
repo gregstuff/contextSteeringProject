@@ -5,17 +5,32 @@ export const GAME_CONFIG : GameConfig = {
     boidsControllers: [
         {
             id: 'boids controller one',
-            initialCount: 0,
-            size: 30,
-            maximumSpeed: 3,
+            initialCount: 500,
+            size: 5,
+            maximumSpeed: 6,
             maximumForce: 0.05,
             faction: Faction.DEFENDER,
             steeringBehaviourConfigs: [
                 {
-                    steeringBehaviour: SteeringBehaviourType.WANDER,
-                    weight: 0.5,
-                    useDebug: true
-                }
+                    steeringBehaviour: SteeringBehaviourType.SELF_FACTION_FLEE,
+                    weight: 1,
+                    useDebug: false
+                },
+                {
+                    steeringBehaviour: SteeringBehaviourType.SELF_FACTION_SEEK,
+                    weight: 0.8,
+                    useDebug: false
+                },
+                {
+                    steeringBehaviour: SteeringBehaviourType.ALIGNMENT,
+                    weight: 0.8,
+                    useDebug: false
+                },
+                {
+                    steeringBehaviour: SteeringBehaviourType.SIMPLE_FORWARDS,
+                    weight: 0.2,
+                    useDebug: false
+                },
             ]
         }
     ]

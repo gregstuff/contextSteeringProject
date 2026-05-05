@@ -18,11 +18,13 @@ export class Start extends Phaser.Scene {
     boidsControllers: BoidsController[];
     bounds: Bounds | undefined;
     uiText: Phaser.GameObjects.Text | undefined;
+    boidCount: number;
 
     constructor() {
         super('Start');
         this.targetPos = undefined;
         this.selectedBoidsControllerIndex = 0;
+        this.boidCount = 0;
         this.mouseMode = MouseMode.TARGET;
         this.eventEmitters = {};
         this.boidsControllers = [];
@@ -91,6 +93,10 @@ export class Start extends Phaser.Scene {
                 if (this.mouseMode === MouseMode.SPAWN) {
                 const selectedController = this.boidsControllers[this.selectedBoidsControllerIndex];
                 selectedController.config.eventEmitter.emit('spawn', clickPos);
+                ++this.boidCount;
+
+                this.updateUIText();
+
                 return;
             }
         });
@@ -117,6 +123,7 @@ export class Start extends Phaser.Scene {
             const { initialCount, steeringBehaviourConfigs, maximumForce, maximumSpeed, id, size, faction } = bc;
             const relevantEventEmitter = new Phaser.Events.EventEmitter();
             this.eventEmitters[id] = relevantEventEmitter;
+            this.boidCount += initialCount;
             const config = new BoidsConfig(
                 id, 
                 initialCount, 
@@ -144,7 +151,7 @@ export class Start extends Phaser.Scene {
             : 'Spawn';
 
         this.uiText!.setText(
-            `Click action: ${modeLabel}\nSelected controller: ${controllerLabel}`
+            `Click action: ${modeLabel}\nSelected controller: ${controllerLabel}\nBoid Count: ${this.boidCount}`
         );
 
     }

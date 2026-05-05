@@ -10,6 +10,7 @@ import {WanderingBehaviour} from "./behaviours/impl/WanderingBehaviour.ts";
 import {SelfFactionSeek} from "./behaviours/impl/SelfFactionSeek.ts";
 import {Alignment} from "./behaviours/impl/Alignment.ts";
 import {SelfFactionFlee} from "./behaviours/impl/SelfFactionFlee.ts";
+import {SimpleForwards} from "./behaviours/impl/SimpleForwards.ts";
 
 export class SteeringController {
 
@@ -24,6 +25,7 @@ export class SteeringController {
             [SteeringBehaviourType.SELF_FACTION_SEEK]: new SelfFactionSeek(),
             [SteeringBehaviourType.SELF_FACTION_FLEE]: new SelfFactionFlee(),
             [SteeringBehaviourType.ALIGNMENT]: new Alignment(),
+            [SteeringBehaviourType.SIMPLE_FORWARDS]: new SimpleForwards(),
         };
     }
 

@@ -36,7 +36,7 @@ export class WanderingBehaviour implements SteeringBehaviour {
         const steeringVelocity: Vector2 = projectedWanderPoint.clone().subtract(boidPos); // steering force
 
         if(debugOutput){
-            steeringContext.pushDebugShape(new DebugCircle(Colors.RED, PROJECTED_WANDER_POINT_DEBUG_RADIUS, projectedPoint))
+            steeringContext.pushDebugShape(new DebugCircle(Colors.RED, PROJECTED_POINT_BULLSEYE_RADIUS, projectedPoint))
             steeringContext.pushDebugShape(new DebugCircle(Colors.WHITE, WANDER_RADIUS, projectedPoint));
             steeringContext.pushDebugShape(new DebugCircle(Colors.GREEN, PROJECTED_WANDER_POINT_DEBUG_RADIUS, projectedWanderPoint));
         }

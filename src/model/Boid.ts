@@ -47,7 +47,9 @@ export class Boid {
             selfFactionSeekPoint: undefined,
             selfFactionSeekLastCacheSeconds: undefined,
             selfFactionFleeLastCacheSeconds: undefined,
-            selfFactionFleePoint: undefined
+            selfFactionFleePoint: undefined,
+            alignmentVector: undefined,
+            alignmentCacheSeconds: undefined
         };
 
         this.closeDistanceEnemies = [];
