@@ -54,6 +54,11 @@ export function drawX(graphics: Phaser.GameObjects.Graphics, x: number, y: numbe
         );
 }
 
-export function drawCircle(graphics: Phaser.GameObjects.Graphics, x: number, y: number, radius: number) {
+export function drawCircleOutline(graphics: Phaser.GameObjects.Graphics, x: number, y: number, radius: number) {
     graphics.strokeCircle(x, y, radius);
+}
+
+export function drawFilledCircle(graphics: Phaser.GameObjects.Graphics, x: number, y: number, radius: number): void {
+    graphics.fillStyle(0xff0000, 1);
+    graphics.fillCircle(x, y, radius);
 }

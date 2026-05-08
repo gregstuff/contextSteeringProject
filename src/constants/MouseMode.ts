@@ -1,4 +1,7 @@
 export enum MouseMode {
-    TARGET = 'TARGET',
-    SPAWN = 'SPAWN'
+    TARGET,
+    SPAWN,
+    OBSTACLE
 }
+
+export const MOUSE_MODE_LENGTH: number = Object.values(MouseMode).filter(v => typeof v === 'number').length;

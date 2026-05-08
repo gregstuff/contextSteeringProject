@@ -1,10 +1,23 @@
 import Phaser from "phaser";
 import type {Faction} from "../constants/Faction.ts";
 import type {BoidBlackboard} from "./BoidBlackboard.ts";
+import Vector2 = Phaser.Math.Vector2;
+import type {Entity} from "../constants/Util.ts";
+import {Obstacle} from "../obstacles/Obstacle.ts";
 
 export const CLOSE_DISTANCE = 50;
 export const MEDIUM_DISTANCE = 100;
 export const FAR_DISTANCE = 150;
+
+export type BoidWithDistance = {
+    boid: Boid;
+    toThis: Vector2;
+}
+
+export type ObstacleWithDistance = {
+    obstacle: Obstacle;
+    toThis: Vector2;
+}
 
 export class Boid {
 
@@ -18,13 +31,15 @@ export class Boid {
     target: Phaser.Math.Vector2 | undefined;
     blackboard: BoidBlackboard;
 
-    closeDistanceEnemies: Boid[];
-    mediumDistanceEnemies: Boid[];
-    farDistanceEnemies: Boid[];
+    closeDistanceEnemies: BoidWithDistance[];
+    mediumDistanceEnemies: BoidWithDistance[];
+    farDistanceEnemies: BoidWithDistance[];
 
-    closeDistanceFriendlies: Boid[];
-    mediumDistanceFriendlies: Boid[];
-    farDistanceFriendlies: Boid[];
+    closeDistanceFriendlies: BoidWithDistance[];
+    mediumDistanceFriendlies: BoidWithDistance[];
+    farDistanceFriendlies: BoidWithDistance[];
+
+    obstacles: ObstacleWithDistance[];
 
     constructor(pos: Phaser.Math.Vector2,
                 startingVelocity: Phaser.Math.Vector2,
@@ -49,7 +64,9 @@ export class Boid {
             selfFactionFleeLastCacheSeconds: undefined,
             selfFactionFleePoint: undefined,
             alignmentVector: undefined,
-            alignmentCacheSeconds: undefined
+            alignmentCacheSeconds: undefined,
+            avoidObstaclesCacheSeconds: undefined,
+            avoidObstaclesVector: undefined
         };
 
         this.closeDistanceEnemies = [];
@@ -59,6 +76,8 @@ export class Boid {
         this.closeDistanceFriendlies = [];
         this.mediumDistanceFriendlies = [];
         this.farDistanceFriendlies = [];
+
+        this.obstacles = [];
     }
     
     move(newVelocity: Phaser.Math.Vector2) {
@@ -75,7 +94,7 @@ export class Boid {
         );
     }
 
-    updateCache(allBoids: Boid[]) {
+    updateCache(allEntities: Entity[]) {
         this.closeDistanceEnemies = [];
         this.mediumDistanceEnemies = [];
         this.farDistanceEnemies = [];
@@ -84,33 +103,63 @@ export class Boid {
         this.mediumDistanceFriendlies = [];
         this.farDistanceFriendlies = [];
 
-        for( let i = 0; i < allBoids.length; ++i ){
-            const isSelf = allBoids[i].id === this.id;
-            const isEnemy = allBoids[i].faction !== this.faction; // might want to make this more nuanced later
+        this.obstacles = [];
 
-            if(isSelf) continue;
+        for( let i = 0; i < allEntities.length; ++i ){
+            const entity = allEntities[i];
 
-            const other = allBoids[i];
-
-            const nearDist = isEnemy ? this.closeDistanceEnemies : this.closeDistanceFriendlies;
-            const mediumDist = isEnemy ? this.mediumDistanceEnemies : this.mediumDistanceFriendlies;
-            const farDist = isEnemy ? this.farDistanceEnemies : this.farDistanceFriendlies;
-
-            const toTarget = new Phaser.Math.Vector2()
-                .copy(other.pos)
-                .subtract(this.pos);
-
-            const dist = toTarget.length();
-
-            if(dist <= CLOSE_DISTANCE){
-                nearDist.push(other);
+            if(typeof entity === typeof Boid){
+                this.handleForBoid(allEntities[i] as Boid);
             }
-            else if(dist <= MEDIUM_DISTANCE){
-                mediumDist.push(other);
+            else if(typeof entity === typeof Obstacle){
+                this.handleForObstacle(allEntities[i] as Obstacle);
             }
-            else if(dist <= FAR_DISTANCE) {
-                farDist.push(other);
-            }
+        }
+    }
+
+    handleForObstacle(obstacle: Obstacle): void{
+
+        const toThis: Vector2 = new Phaser.Math.Vector2()
+            .copy(obstacle.pos)
+            .subtract(this.pos);
+
+        const obstacleWithDistance: ObstacleWithDistance = {
+            obstacle,
+            toThis
+        }
+
+        this.obstacles.push(obstacleWithDistance)
+    }
+
+    handleForBoid(other: Boid): void {
+        const isSelf: boolean = other.id === this.id;
+        const isEnemy: boolean = other.faction !== this.faction; // might want to make this more nuanced later
+
+        if(isSelf) return;
+
+        const nearDist: BoidWithDistance[] = isEnemy ? this.closeDistanceEnemies : this.closeDistanceFriendlies;
+        const mediumDist: BoidWithDistance[] = isEnemy ? this.mediumDistanceEnemies : this.mediumDistanceFriendlies;
+        const farDist: BoidWithDistance[] = isEnemy ? this.farDistanceEnemies : this.farDistanceFriendlies;
+
+        const toTarget: Vector2 = new Phaser.Math.Vector2()
+            .copy(other.pos)
+            .subtract(this.pos);
+
+        const dist: number = toTarget.length();
+
+        const boidWithDistance = {
+            boid: other,
+            toThis: toTarget
+        }
+
+        if(dist <= CLOSE_DISTANCE){
+            nearDist.push(boidWithDistance);
+        }
+        else if(dist <= MEDIUM_DISTANCE){
+            mediumDist.push(boidWithDistance);
+        }
+        else if(dist <= FAR_DISTANCE) {
+            farDist.push(boidWithDistance);
         }
     }
 

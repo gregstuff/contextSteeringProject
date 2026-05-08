@@ -13,31 +13,40 @@ export const GAME_CONFIG : GameConfig = {
             steeringBehaviourConfigs: [
                 {
                     steeringBehaviour: SteeringBehaviourType.SELF_FACTION_FLEE,
-                    weight: 1,
+                    weight: 0.4,
                     useDebug: false
                 },
                 {
                     steeringBehaviour: SteeringBehaviourType.SELF_FACTION_SEEK,
-                    weight: 0.8,
+                    weight: 0.2,
                     useDebug: false
                 },
                 {
                     steeringBehaviour: SteeringBehaviourType.ALIGNMENT,
-                    weight: 0.8,
+                    weight: 0.3,
                     useDebug: false
                 },
                 {
                     steeringBehaviour: SteeringBehaviourType.SIMPLE_FORWARDS,
-                    weight: 0.2,
+                    weight: 0.1,
+                    useDebug: false
+                },
+                {
+                    steeringBehaviour: SteeringBehaviourType.AVOID_OBSTACLES,
+                    weight: 0.8,
                     useDebug: false
                 },
             ]
         }
-    ]
+    ],
+    obstacleController: {
+        size: 20
+    }
 };
 
 export interface GameConfig {
     boidsControllers: BoidsControllerConfig[];
+    obstacleController: ObstacleConfig;
 }
 
 export interface BoidsControllerConfig {
@@ -54,4 +63,8 @@ export interface SteeringBehaviourConfig {
     steeringBehaviour: SteeringBehaviourType,
     weight: number,
     useDebug: boolean
+}
+
+export interface ObstacleConfig {
+    size: number;
 }

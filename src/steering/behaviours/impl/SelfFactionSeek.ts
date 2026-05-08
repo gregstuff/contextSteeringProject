@@ -1,6 +1,6 @@
 import type {SteeringBehaviour} from "../SteeringBehaviour.ts";
 import type {SteeringContext} from "../../model/SteeringContext.ts";
-import {type Boid, FAR_DISTANCE} from "../../../model/Boid.ts";
+import {type Boid, type BoidWithDistance, FAR_DISTANCE} from "../../../model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 import Phaser from "phaser";
 
@@ -36,7 +36,7 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
         if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
-        const allFriendlies: Boid[] = [...boid.closeDistanceFriendlies, ...boid.mediumDistanceFriendlies];
+        const allFriendlies: BoidWithDistance[] = [...boid.closeDistanceFriendlies, ...boid.mediumDistanceFriendlies];
 
         boid.blackboard.selfFactionSeekLastCacheSeconds = secondsSinceStart;
 
@@ -54,12 +54,14 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
             const friendly = allFriendlies[i];
 
-            const toOther = friendly.pos.clone().subtract(boid.pos);
-            const dist = toOther.length();
+            const otherPos = friendly.boid.pos;
+            const toThis = friendly.toThis;
+
+            const dist = toThis.length();
             const weight = 1 - Phaser.Math.Clamp(dist / FAR_DISTANCE, 0, 1);
 
-            x+= friendly.pos.x * weight;
-            y+= friendly.pos.y * weight;
+            x+= otherPos.x * weight;
+            y+= otherPos.y * weight;
 
             weightSum += weight;
         }

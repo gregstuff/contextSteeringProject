@@ -6,6 +6,7 @@ import Vector2 = Phaser.Math.Vector2;
 import {BoidsConfig} from "./BoidsConfig.ts";
 import type {SteeringContext} from "../steering/model/SteeringContext.ts";
 import Phaser from "phaser";
+import type {Entity} from "../constants/Util.ts";
 
 const CACHE_UPDATE_SECONDS = 0.2;
 
@@ -33,8 +34,8 @@ export class BoidsController {
         this.steeringCtx = undefined;
     }
 
-    tick(allBoids: Boid[], secondsSinceStart: number): void {
-        this.updateBoidReferences(allBoids, secondsSinceStart);
+    tick(allEntities: Entity[], secondsSinceStart: number): void {
+        this.updateBoidReferences(allEntities, secondsSinceStart);
         this.updateBoids(secondsSinceStart);
         this.drawBoids();
         this.drawDebug();
@@ -124,13 +125,13 @@ export class BoidsController {
         this.boids.push(new Boid(startingPos, startingVelocity, size, faction, maximumSpeed, maximumForce));
     }
 
-    updateBoidReferences(allBoids: Boid[], secondsSinceStart: number): void {
+    updateBoidReferences(allEntities: Entity[], secondsSinceStart: number): void {
         if(this.lastCacheUpdate && this.lastCacheUpdate + CACHE_UPDATE_SECONDS > secondsSinceStart ) return;
 
         this.lastCacheUpdate = secondsSinceStart;
 
         for(let i = 0; i < this.boids.length; ++i){
-            this.boids[i].updateCache(allBoids);
+            this.boids[i].updateCache(allEntities);
         }
     }
 

@@ -8,4 +8,6 @@ export type BoidBlackboard = {
     selfFactionFleePoint: Vector2 | undefined;
     alignmentCacheSeconds: number | undefined;
     alignmentVector: Vector2 | undefined;
+    avoidObstaclesCacheSeconds: number | undefined;
+    avoidObstaclesVector: Vector2 | undefined;
 }
