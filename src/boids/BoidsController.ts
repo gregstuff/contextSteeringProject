@@ -174,7 +174,7 @@ export class BoidsController {
         for(let i = 0; i < this.boids.length; ++i){
             this.boids[i].updateCache(allEntities);
             for(let j = 0; j < this.modules.length; ++j){
-                this.modules[i].onCache(this.boids[i]);
+                this.modules[j].onCache(this.boids[i]);
             }
         }
     }
