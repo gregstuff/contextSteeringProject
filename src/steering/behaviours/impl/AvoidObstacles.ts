@@ -1,10 +1,10 @@
 import type {SteeringBehaviour} from "../SteeringBehaviour.ts";
 import Phaser from "phaser";
 import type {SteeringContext} from "../../model/SteeringContext.ts";
-import {type Boid, type ObstacleWithDistance} from "../../../model/Boid.ts";
+import {type Boid, type ObstacleWithDistance} from "../../../boids/Model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 
-const OBSTACLE_AVOID_DIST = 120;
+const OBSTACLE_MARGIN = 180;
 const CACHE_DURATION_SECONDS = 0.1;
 
 export class AvoidObstacles implements SteeringBehaviour {
@@ -14,7 +14,7 @@ export class AvoidObstacles implements SteeringBehaviour {
 
         this.resolveAvoidVector(boid, secondsSinceStart);
 
-        const avoidVector: Vector2 | undefined = boid.blackboard.avoidObstaclesVector;
+        const avoidVector: Vector2 | undefined = boid.blackboard.steeringCache.avoidObstaclesVector;
 
         if(!avoidVector) return;
 
@@ -24,17 +24,16 @@ export class AvoidObstacles implements SteeringBehaviour {
 
     resolveAvoidVector(boid: Boid, secondsSinceStart: number): void {
 
-        const lastCache: number | undefined = boid.blackboard.avoidObstaclesCacheSeconds;
+        const lastCache: number | undefined = boid.blackboard.steeringCache.avoidObstaclesCacheSeconds;
 
         if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
         const obstacles: ObstacleWithDistance[] = boid.obstacles;
 
-        boid.blackboard.avoidObstaclesCacheSeconds = secondsSinceStart;
+        boid.blackboard.steeringCache.avoidObstaclesCacheSeconds = secondsSinceStart;
 
         if (obstacles.length === 0) {
-            boid.blackboard.avoidObstaclesVector = undefined;
-            boid.blackboard.avoidObstaclesCacheSeconds = secondsSinceStart;
+            boid.blackboard.steeringCache.avoidObstaclesVector = undefined;
             return;
         }
 
@@ -45,26 +44,36 @@ export class AvoidObstacles implements SteeringBehaviour {
         for(let i: number = 0; i < obstacles.length; ++i) {
             const obstacle: ObstacleWithDistance = obstacles[i];
 
-            const obstaclePos: Vector2 = obstacle.obstacle.pos;
+            const avoidDist: number = obstacle.obstacle.size + OBSTACLE_MARGIN;
+
             const toThis = obstacle.toThis;
 
-            const dist = toThis.length();
-            const weight = 1 - Phaser.Math.Clamp(dist / OBSTACLE_AVOID_DIST, 0, 1);
+            const centerDist = toThis.length();
+            const surfaceDist = Math.max(0, centerDist - obstacle.obstacle.size);
 
-            x+= obstaclePos.x * weight;
-            y+= obstaclePos.y * weight;
+            if (surfaceDist >= avoidDist) continue;
+
+            const t: number = 1 - Phaser.Math.Clamp(surfaceDist / avoidDist, 0, 1);
+            const weight: number = t * t * t;
+
+            const towardDanger = toThis.clone().normalize().scale(weight);
+            x += towardDanger.x;
+            y += towardDanger.y;
 
             weightSum += weight;
+        }
+
+        if(weightSum == 0) {
+            boid.blackboard.steeringCache.avoidObstaclesVector = undefined;
+            return;
         }
 
         x /= weightSum;
         y /= weightSum;
 
-        const resolvedPoint: Vector2 = new Vector2(x, y);
+        const resolvedVector: Vector2 = new Vector2(x, y);
 
-        const toDanger: Vector2 = resolvedPoint.subtract(boid.pos)
-
-        boid.blackboard.avoidObstaclesVector = toDanger;
+        boid.blackboard.steeringCache.avoidObstaclesVector = resolvedVector;
     }
 
 }

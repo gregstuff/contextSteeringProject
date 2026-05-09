@@ -1,7 +1,7 @@
 import type {SteeringBehaviour} from "../SteeringBehaviour.ts";
 import Phaser from "phaser";
 import type {SteeringContext} from "../../model/SteeringContext.ts";
-import {type Boid, type BoidWithDistance, FAR_DISTANCE} from "../../../model/Boid.ts";
+import {type Boid, type BoidWithDistance, FAR_DISTANCE} from "../../../boids/Model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 
 const MAX_SPEED_DIST = 30;
@@ -14,7 +14,7 @@ export class SelfFactionFlee implements SteeringBehaviour {
 
         this.resolveFleePoint(boid, secondsSinceStart);
 
-        const selfFactionFleePoint: Vector2 | undefined = boid.blackboard.selfFactionFleePoint;
+        const selfFactionFleePoint: Vector2 | undefined = boid.blackboard.steeringCache.selfFactionFleePoint;
 
         if(!selfFactionFleePoint) return; // no seek point, cannot seek
 
@@ -29,17 +29,17 @@ export class SelfFactionFlee implements SteeringBehaviour {
 
     resolveFleePoint(boid: Boid, secondsSinceStart: number): void {
 
-        const lastCache = boid.blackboard.selfFactionFleeLastCacheSeconds;
+        const lastCache = boid.blackboard.steeringCache.selfFactionFleeLastCacheSeconds;
 
         if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
         const resolvedFriendlies: BoidWithDistance[] = [...boid.closeDistanceFriendlies];
 
-        boid.blackboard.selfFactionFleeLastCacheSeconds = secondsSinceStart;
+        boid.blackboard.steeringCache.selfFactionFleeLastCacheSeconds = secondsSinceStart;
 
         if (resolvedFriendlies.length === 0) {
-            boid.blackboard.selfFactionFleePoint = undefined;
-            boid.blackboard.selfFactionFleeLastCacheSeconds = secondsSinceStart;
+            boid.blackboard.steeringCache.selfFactionFleePoint = undefined;
+            boid.blackboard.steeringCache.selfFactionFleeLastCacheSeconds = secondsSinceStart;
             return;
         }
 
@@ -68,7 +68,7 @@ export class SelfFactionFlee implements SteeringBehaviour {
 
         const resolvedPoint: Vector2 = new Vector2(x, y);
 
-        boid.blackboard.selfFactionFleePoint = resolvedPoint;
+        boid.blackboard.steeringCache.selfFactionFleePoint = resolvedPoint;
     }
 
 }

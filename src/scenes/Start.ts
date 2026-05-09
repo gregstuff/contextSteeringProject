@@ -1,12 +1,12 @@
 import {Bounds} from '../model/Bounds.js';
 import {drawX} from '../util/GraphicsUtils.js';
 import {BoidsController} from '../boids/BoidsController.js';
-import {BoidsConfig} from '../boids/BoidsConfig.js';
 import {GAME_CONFIG} from '../config/GameConfig.js';
 import Phaser from "phaser";
 import {MOUSE_MODE_LENGTH, MouseMode} from "../constants/MouseMode.ts";
 import type {Entity} from "../constants/Util.ts";
 import {ObstacleController} from "../obstacles/ObstacleController.ts";
+import {BoidEvent} from "../constants/BoidEvent.ts";
 
 const BOUNDS_BUFFER = 1.2;
 
@@ -101,7 +101,9 @@ export class Start extends Phaser.Scene {
             }
             else if (this.mouseMode === MouseMode.SPAWN) {
                 const selectedController = this.boidsControllers[this.selectedBoidsControllerIndex];
-                selectedController.config.eventEmitter.emit('spawn', clickPos);
+
+                const relevantEmitter: Phaser.Events.EventEmitter = this.eventEmitters[selectedController.config.id];
+                relevantEmitter.emit('spawn', clickPos);
                 ++this.boidCount;
 
                 this.updateUIText();
@@ -130,21 +132,13 @@ export class Start extends Phaser.Scene {
     initBoidsControllers(): void {
         this.boidsControllers = GAME_CONFIG.boidsControllers.map(bc=>
         {
-            const { initialCount, steeringBehaviourConfigs, maximumForce, maximumSpeed, id, size, faction } = bc;
             const relevantEventEmitter = new Phaser.Events.EventEmitter();
-            this.eventEmitters[id] = relevantEventEmitter;
-            this.boidCount += initialCount;
-            const config = new BoidsConfig(
-                id, 
-                initialCount, 
-                size, 
-                faction,
-                maximumSpeed, 
-                maximumForce,
-                steeringBehaviourConfigs,
-                relevantEventEmitter);
+            this.eventEmitters[bc.id] = relevantEventEmitter;
+            this.boidCount += bc.initialCount;
+
+            relevantEventEmitter.on(BoidEvent.DECREMENT_BOID_COUNT, this.handleDecrementBoidCounter, this);
             
-            return new BoidsController(this.graphics!, this.bounds!, config);
+            return new BoidsController(this.graphics!, this.bounds!, bc, relevantEventEmitter);
         });
     }
 
@@ -166,6 +160,11 @@ export class Start extends Phaser.Scene {
 
     getAllEntities(): Entity[] {
         return [...this.boidsControllers.flatMap(controller => controller.boids), ...this.obstacleController.obstacles];
+    }
+
+    handleDecrementBoidCounter(): void {
+        this.boidCount -= 1;
+        this.updateUIText();
     }
     
 }

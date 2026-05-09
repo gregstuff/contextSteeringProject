@@ -1,9 +1,15 @@
 import Vector2 = Phaser.Math.Vector2;
 import Phaser from "phaser";
 
-export function drawBoid(graphics: Phaser.GameObjects.Graphics, x: number,y: number, rotation: number, size: number): void {
+export function drawBoid(
+    graphics: Phaser.GameObjects.Graphics,
+    color: number,
+    x: number,
+    y: number,
+    rotation: number,
+    size: number): void {
 
-        graphics.fillStyle(0xffffff, 1);
+        graphics.fillStyle(color, 1);
 
         const points: Vector2[] = [
             new Vector2(size, 0), // nose / forward point
@@ -59,6 +65,6 @@ export function drawCircleOutline(graphics: Phaser.GameObjects.Graphics, x: numb
 }
 
 export function drawFilledCircle(graphics: Phaser.GameObjects.Graphics, x: number, y: number, radius: number): void {
-    graphics.fillStyle(0xff0000, 1);
+    graphics.fillStyle(0xffffff, 1);
     graphics.fillCircle(x, y, radius);
 }

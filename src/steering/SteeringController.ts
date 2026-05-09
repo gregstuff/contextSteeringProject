@@ -2,7 +2,7 @@ import { TargetSteeringBehaviour } from './behaviours/impl/TargetSteeringBehavio
 import { SteeringContext } from './model/SteeringContext.js';
 import type {SteeringBehaviourConfig} from "../config/GameConfig.ts";
 import Vector2 = Phaser.Math.Vector2;
-import { Boid } from "../model/Boid.ts";
+import { Boid } from "../boids/Model/Boid.ts";
 import {SteeringBehaviourType} from "./constants/SteeringBehaviourType.ts";
 import type {SteeringBehaviour} from "./behaviours/SteeringBehaviour.ts";
 import Phaser from "phaser";
@@ -12,6 +12,8 @@ import {Alignment} from "./behaviours/impl/Alignment.ts";
 import {SelfFactionFlee} from "./behaviours/impl/SelfFactionFlee.ts";
 import {SimpleForwards} from "./behaviours/impl/SimpleForwards.ts";
 import {AvoidObstacles} from "./behaviours/impl/AvoidObstacles.ts";
+import {ChaseTarget} from "./behaviours/impl/ChaseTarget.ts";
+import {OtherFactionFleeingBehaviour} from "./behaviours/impl/OtherFactionFleeingBehaviour.ts";
 
 export class SteeringController {
 
@@ -27,7 +29,9 @@ export class SteeringController {
             [SteeringBehaviourType.SELF_FACTION_FLEE]: new SelfFactionFlee(),
             [SteeringBehaviourType.ALIGNMENT]: new Alignment(),
             [SteeringBehaviourType.SIMPLE_FORWARDS]: new SimpleForwards(),
-            [SteeringBehaviourType.AVOID_OBSTACLES]: new AvoidObstacles()
+            [SteeringBehaviourType.AVOID_OBSTACLES]: new AvoidObstacles(),
+            [SteeringBehaviourType.CHASE_TARGET]: new ChaseTarget(),
+            [SteeringBehaviourType.OTHER_FACTION_FLEE]: new OtherFactionFleeingBehaviour()
         };
     }
 

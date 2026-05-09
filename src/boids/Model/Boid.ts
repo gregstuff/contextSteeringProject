@@ -1,9 +1,11 @@
 import Phaser from "phaser";
-import type {Faction} from "../constants/Faction.ts";
+import type {Faction} from "../../constants/Faction.ts";
 import type {BoidBlackboard} from "./BoidBlackboard.ts";
 import Vector2 = Phaser.Math.Vector2;
-import type {Entity} from "../constants/Util.ts";
-import {Obstacle} from "../obstacles/Obstacle.ts";
+import type {Entity} from "../../constants/Util.ts";
+import {Obstacle} from "../../obstacles/Obstacle.ts";
+import EventEmitter = Phaser.Events.EventEmitter;
+import {BoidEvent} from "../../constants/BoidEvent.ts";
 
 export const CLOSE_DISTANCE = 50;
 export const MEDIUM_DISTANCE = 100;
@@ -17,6 +19,16 @@ export type BoidWithDistance = {
 export type ObstacleWithDistance = {
     obstacle: Obstacle;
     toThis: Vector2;
+}
+
+export type BoidConfig = {
+    pos: Phaser.Math.Vector2,
+    startingVelocity: Phaser.Math.Vector2,
+    size: number,
+    faction: Faction,
+    maximumSpeed: number,
+    maximumForce: number,
+    parentEventEmitter: Phaser.Events.EventEmitter
 }
 
 export class Boid {
@@ -41,12 +53,13 @@ export class Boid {
 
     obstacles: ObstacleWithDistance[];
 
-    constructor(pos: Phaser.Math.Vector2,
-                startingVelocity: Phaser.Math.Vector2,
-                size: number,
-                faction: Faction,
-                maximumSpeed: number,
-                maximumForce: number) {
+    emitter: Phaser.Events.EventEmitter;
+
+    isAlive: boolean;
+
+    constructor(config: BoidConfig) {
+
+        const { pos, startingVelocity, size, faction, maximumSpeed, maximumForce, parentEventEmitter } = config;
 
         this.id = crypto.randomUUID();
         this.pos = pos;
@@ -55,18 +68,25 @@ export class Boid {
         this.faction = faction;
         this.maximumSpeed = maximumSpeed;
         this.maximumForce = maximumForce;
+        this.emitter = parentEventEmitter;
+        this.isAlive = true;
         this.target = undefined;
 
         this.blackboard = {
             wanderAngle: Math.random() * Math.PI * 2,
-            selfFactionSeekPoint: undefined,
-            selfFactionSeekLastCacheSeconds: undefined,
-            selfFactionFleeLastCacheSeconds: undefined,
-            selfFactionFleePoint: undefined,
-            alignmentVector: undefined,
-            alignmentCacheSeconds: undefined,
-            avoidObstaclesCacheSeconds: undefined,
-            avoidObstaclesVector: undefined
+            targetBoid: undefined,
+            steeringCache: {
+                selfFactionSeekPoint: undefined,
+                selfFactionSeekLastCacheSeconds: undefined,
+                selfFactionFleeLastCacheSeconds: undefined,
+                selfFactionFleePoint: undefined,
+                alignmentVector: undefined,
+                alignmentCacheSeconds: undefined,
+                avoidObstaclesCacheSeconds: undefined,
+                avoidObstaclesVector: undefined,
+                otherFactionFleePoint: undefined,
+                otherFactionFleeLastCacheSeconds: undefined
+            }
         };
 
         this.closeDistanceEnemies = [];
@@ -80,12 +100,12 @@ export class Boid {
         this.obstacles = [];
     }
     
-    move(newVelocity: Phaser.Math.Vector2) {
+    move(newVelocity: Phaser.Math.Vector2): void {
         this.velocity = newVelocity;
         this.pos.add(this.velocity);
     }
 
-    getRotation() {
+    getRotation(): number {
         return Phaser.Math.Angle.Between(
             0,
             0,
@@ -94,7 +114,7 @@ export class Boid {
         );
     }
 
-    updateCache(allEntities: Entity[]) {
+    updateCache(allEntities: Entity[]): void {
         this.closeDistanceEnemies = [];
         this.mediumDistanceEnemies = [];
         this.farDistanceEnemies = [];
@@ -108,16 +128,16 @@ export class Boid {
         for( let i = 0; i < allEntities.length; ++i ){
             const entity = allEntities[i];
 
-            if(typeof entity === typeof Boid){
+            if(entity instanceof Boid){
                 this.handleForBoid(allEntities[i] as Boid);
             }
-            else if(typeof entity === typeof Obstacle){
+            else if(entity instanceof Obstacle){
                 this.handleForObstacle(allEntities[i] as Obstacle);
             }
         }
     }
 
-    handleForObstacle(obstacle: Obstacle): void{
+    handleForObstacle(obstacle: Obstacle): void {
 
         const toThis: Vector2 = new Phaser.Math.Vector2()
             .copy(obstacle.pos)
@@ -152,15 +172,20 @@ export class Boid {
             toThis: toTarget
         }
 
-        if(dist <= CLOSE_DISTANCE){
+        if(dist <= CLOSE_DISTANCE) {
             nearDist.push(boidWithDistance);
         }
-        else if(dist <= MEDIUM_DISTANCE){
+        else if(dist <= MEDIUM_DISTANCE) {
             mediumDist.push(boidWithDistance);
         }
         else if(dist <= FAR_DISTANCE) {
             farDist.push(boidWithDistance);
         }
+    }
+
+    destroy(): void {
+        this.isAlive = false;
+        this.emitter.emit(BoidEvent.DESTROY_BOID, this);
     }
 
 }

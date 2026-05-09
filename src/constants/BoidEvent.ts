@@ -1,0 +1,4 @@
+export enum BoidEvent {
+    DESTROY_BOID = 'DESTROY_BOID',
+    DECREMENT_BOID_COUNT = 'DECREMENT_BOID_COUNT'
+}

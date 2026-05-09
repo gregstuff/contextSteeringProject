@@ -1,6 +1,6 @@
 import type {SteeringBehaviour} from "../SteeringBehaviour.ts";
 import type {SteeringContext} from "../../model/SteeringContext.ts";
-import {type Boid, type BoidWithDistance, FAR_DISTANCE} from "../../../model/Boid.ts";
+import {type Boid, type BoidWithDistance, FAR_DISTANCE} from "../../../boids/Model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 import Phaser from "phaser";
 
@@ -12,7 +12,7 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
         this.resolveSeekPoint(boid, secondsSinceStart);
 
-        const selfFactionSeekPoint: Vector2 | undefined = boid.blackboard.selfFactionSeekPoint;
+        const selfFactionSeekPoint: Vector2 | undefined = boid.blackboard.steeringCache.selfFactionSeekPoint;
 
         if(!selfFactionSeekPoint) return; // no seek point, cannot seek
 
@@ -32,17 +32,17 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
     resolveSeekPoint(boid: Boid, secondsSinceStart: number): void {
 
-        const lastCache = boid.blackboard.selfFactionSeekLastCacheSeconds;
+        const lastCache = boid.blackboard.steeringCache.selfFactionSeekLastCacheSeconds;
 
         if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
         const allFriendlies: BoidWithDistance[] = [...boid.closeDistanceFriendlies, ...boid.mediumDistanceFriendlies];
 
-        boid.blackboard.selfFactionSeekLastCacheSeconds = secondsSinceStart;
+        boid.blackboard.steeringCache.selfFactionSeekLastCacheSeconds = secondsSinceStart;
 
         if (allFriendlies.length === 0) {
-            boid.blackboard.selfFactionSeekPoint = undefined;
-            boid.blackboard.selfFactionSeekLastCacheSeconds = secondsSinceStart;
+            boid.blackboard.steeringCache.selfFactionSeekPoint = undefined;
+            boid.blackboard.steeringCache.selfFactionSeekLastCacheSeconds = secondsSinceStart;
             return;
         }
 
@@ -71,7 +71,7 @@ export class SelfFactionSeek implements SteeringBehaviour {
 
         const resolvedPoint: Vector2 = new Vector2(x, y);
 
-        boid.blackboard.selfFactionSeekPoint = resolvedPoint;
+        boid.blackboard.steeringCache.selfFactionSeekPoint = resolvedPoint;
     }
 
 }

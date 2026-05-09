@@ -1,7 +1,13 @@
 import Vector2 = Phaser.Math.Vector2;
+import { type BoidWithDistance } from "./Boid.ts";
 
 export type BoidBlackboard = {
     wanderAngle: number;
+    targetBoid: BoidWithDistance | undefined;
+    steeringCache: SteeringCache;
+}
+
+export type SteeringCache = {
     selfFactionSeekLastCacheSeconds: number | undefined;
     selfFactionSeekPoint: Vector2 | undefined;
     selfFactionFleeLastCacheSeconds: number | undefined;
@@ -10,4 +16,6 @@ export type BoidBlackboard = {
     alignmentVector: Vector2 | undefined;
     avoidObstaclesCacheSeconds: number | undefined;
     avoidObstaclesVector: Vector2 | undefined;
+    otherFactionFleePoint: Vector2 | undefined;
+    otherFactionFleeLastCacheSeconds: number | undefined;
 }

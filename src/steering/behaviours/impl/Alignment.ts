@@ -1,7 +1,7 @@
 import type {SteeringBehaviour} from "../SteeringBehaviour.ts";
 import Phaser from "phaser";
 import  {type SteeringContext} from "../../model/SteeringContext.ts";
-import {type Boid, FAR_DISTANCE} from "../../../model/Boid.ts";
+import {type Boid, type BoidWithDistance, FAR_DISTANCE} from "../../../boids/Model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 
 const CACHE_DURATION_SECONDS = 0.1;
@@ -13,7 +13,7 @@ export class Alignment implements SteeringBehaviour {
 
         this.resolveAlignmentVector(boid, secondsSinceStart);
 
-        const alignmentVector: Vector2 | undefined = boid.blackboard.alignmentVector;
+        const alignmentVector: Vector2 | undefined = boid.blackboard.steeringCache.alignmentVector;
 
         if(!alignmentVector) return; // no seek point, cannot seek
 
@@ -24,17 +24,17 @@ export class Alignment implements SteeringBehaviour {
 
     resolveAlignmentVector(boid: Boid, secondsSinceStart: number): void {
 
-        const lastCache = boid.blackboard.alignmentCacheSeconds;
+        const lastCache = boid.blackboard.steeringCache.alignmentCacheSeconds;
 
         if(lastCache && lastCache + CACHE_DURATION_SECONDS > secondsSinceStart) return;
 
-        const allFriendlies: Boid[] = [...boid.closeDistanceFriendlies, ...boid.mediumDistanceFriendlies];
+        const allFriendlies: BoidWithDistance[] = [...boid.closeDistanceFriendlies, ...boid.mediumDistanceFriendlies];
 
-        boid.blackboard.alignmentCacheSeconds = secondsSinceStart;
+        boid.blackboard.steeringCache.alignmentCacheSeconds = secondsSinceStart;
 
         if (allFriendlies.length === 0) {
-            boid.blackboard.alignmentVector = undefined;
-            boid.blackboard.alignmentCacheSeconds = secondsSinceStart;
+            boid.blackboard.steeringCache.alignmentVector = undefined;
+            boid.blackboard.steeringCache.alignmentCacheSeconds = secondsSinceStart;
             return;
         }
 
@@ -44,13 +44,13 @@ export class Alignment implements SteeringBehaviour {
 
         for(let i: number = 0; i < allFriendlies.length; ++i) {
 
-            const friendly = allFriendlies[i];
+            const other: BoidWithDistance = allFriendlies[i];
 
-            const toOther = friendly.pos.clone().subtract(boid.pos);
+            const toOther = other.toThis;
             const dist = toOther.length();
             const weight = 1 - Phaser.Math.Clamp(dist / FAR_DISTANCE, 0, 1);
 
-            const normalizedDir: Vector2 = friendly.velocity.clone().normalize();
+            const normalizedDir: Vector2 = other.boid.velocity.clone().normalize();
 
             x+= normalizedDir.x * weight;
             y+= normalizedDir.y * weight;
@@ -63,7 +63,7 @@ export class Alignment implements SteeringBehaviour {
 
         const resolvedVector: Vector2 = new Vector2(x, y);
 
-        boid.blackboard.alignmentVector = resolvedVector;
+        boid.blackboard.steeringCache.alignmentVector = resolvedVector;
     }
 
 }
