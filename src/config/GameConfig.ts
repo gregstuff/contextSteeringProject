@@ -20,7 +20,7 @@ export const GAME_CONFIG : GameConfig = {
                 },
                 {
                     steeringBehaviour: SteeringBehaviourType.SELF_FACTION_FLEE,
-                    weight: 0.6,
+                    weight: 0.45,
                     useDebug: false
                 },
                 {
