@@ -1,3 +1,4 @@
 export enum BoidModuleType {
-    PREDATOR
+    PREDATOR,
+    ENGAGEMENT
 }

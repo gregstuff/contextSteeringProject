@@ -1,4 +1,4 @@
-import type {Engagement} from "../../boids/Modules/Domain/Engagement.ts";
+import type {Engagement} from "./Engagement.ts";
 
 export class TurnCalculator {
 

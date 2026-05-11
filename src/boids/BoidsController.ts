@@ -12,6 +12,7 @@ import type {BoidModule} from "./Modules/BoidModule.ts";
 import {PredatorModule} from "./Modules/Impl/PredatorModule.ts";
 import {BoidModuleType} from "../constants/BoidModuleType.ts";
 import type {EngagementSlotManager} from "../engagement/slotManagement/EngagementSlotManager.ts";
+import type {EngagementController} from "../engagement/EngagementController.ts";
 
 const CACHE_UPDATE_SECONDS = 0.2;
 
@@ -29,19 +30,22 @@ export class BoidsController {
     parentEmitter: Phaser.Events.EventEmitter;
     modules: BoidModule[];
     engagementSlotManager: EngagementSlotManager;
+    engagementController: EngagementController;
 
     constructor(
         graphics: Phaser.GameObjects.Graphics,
         bounds: Bounds,
         config: BoidsControllerConfig,
         parentEmitter: Phaser.Events.EventEmitter,
-        engagementSlotManager: EngagementSlotManager) {
+        engagementSlotManager: EngagementSlotManager,
+        engagementController: EngagementController) {
         this.graphics = graphics;
         this.bounds = bounds;
         this.config = config;
         this.boids = [];
         this.targetPos = undefined;
-        this.steeringController = new SteeringController(config.steeringBehaviourConfigs);
+        this.steeringController = new SteeringController(config.steeringConfig);
+        this.engagementController = engagementController;
         this.lastCacheUpdate = Number.MIN_SAFE_INTEGER;
         this.localEmitter = new Phaser.Events.EventEmitter();
         this.parentEmitter = parentEmitter;

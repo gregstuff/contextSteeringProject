@@ -1,4 +1,4 @@
-import {Engagement} from "../boids/Modules/Domain/Engagement.ts";
+import {Engagement} from "./domain/Engagement.ts";
 import {Boid} from "../boids/Model/Boid.ts";
 import {TurnCalculator} from "./domain/TurnCalculator.ts";
 import {EngagementSlotManager} from "./slotManagement/EngagementSlotManager.ts";
@@ -46,7 +46,6 @@ export class EngagementController {
                     return;
                 }
             }
-
         }
 
         // we are neither in an engagement with the target
@@ -57,9 +56,7 @@ export class EngagementController {
     }
 
     joinEngagement(agent: Boid, engagement: Engagement): void {
-        if(engagement.participantSet.has(agent.id)) return;
         if(!this.agentEngagements[agent.id]) this.agentEngagements[agent.id] = [];
-
         this.agentEngagements[agent.id].push(engagement);
     }
 

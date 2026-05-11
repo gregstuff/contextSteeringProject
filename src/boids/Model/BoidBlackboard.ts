@@ -7,6 +7,7 @@ export type BoidBlackboard = {
     targetBoid: BoidWithDistance | undefined;
     steeringCache: SteeringCache;
     engagementCache: EngagementCache;
+    steeringStateMachine: SteeringStateMachineCache;
 }
 
 export type SteeringCache = {
@@ -24,4 +25,8 @@ export type SteeringCache = {
 
 export type EngagementCache = {
     reservedSlot: EngagementSlot | undefined;
+}
+
+export type SteeringStateMachineCache = {
+    currentState: string | undefined;
 }

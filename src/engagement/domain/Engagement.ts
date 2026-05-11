@@ -1,5 +1,5 @@
-import {Boid} from "../../Model/Boid.ts";
-import type {Faction} from "../../../constants/Faction.ts";
+import {Boid} from "../../boids/Model/Boid.ts";
+import type {Faction} from "../../constants/Faction.ts";
 
 type ActiveBoid = {
     boid: Boid;

@@ -89,6 +89,9 @@ export class Boid {
             },
             engagementCache: {
                 reservedSlot: undefined
+            },
+            steeringStateMachine: {
+                currentState: undefined
             }
         };
 

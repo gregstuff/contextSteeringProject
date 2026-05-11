@@ -150,7 +150,8 @@ export class Start extends Phaser.Scene {
                 this.graphics!,
                 this.bounds!,
                 bc, relevantEventEmitter,
-                this.engagementSlotManager);
+                this.engagementSlotManager,
+                this.engagementController);
         });
     }
 
