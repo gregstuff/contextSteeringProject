@@ -21,8 +21,8 @@ export function directionToVector(direction: EngagementSlotDirection): Vector2 {
         case EngagementSlotDirection.WEST:
             return new Vector2(-1, 0);
         case EngagementSlotDirection.NORTH:
-            return new Vector2(0, 1);
-        case EngagementSlotDirection.SOUTH:
             return new Vector2(0, -1);
+        case EngagementSlotDirection.SOUTH:
+            return new Vector2(0, 1);
     }
 }

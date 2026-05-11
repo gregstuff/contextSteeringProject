@@ -7,12 +7,15 @@ const DISTANCE_BUFFER: number = 30;
 export class EngagementSlotManager {
 
         agentSlots: Record<string, EngagementSlot[]>;
+        claimedSlots: Record<string, EngagementSlot>;
 
         constructor() {
             this.agentSlots = {} as Record<string, EngagementSlot[]>;
+            this.claimedSlots = {} as Record<string, EngagementSlot>;
         }
 
         tryGetSlot(self: Boid, target: Boid): EngagementSlot | undefined {
+            // does this agent already have another slot? If so, clean that up
             let agentSlots: EngagementSlot[] = this.agentSlots[target.id];
 
             if(!agentSlots){
@@ -43,7 +46,7 @@ export class EngagementSlotManager {
 
                     if(otherDist < selfDist) continue; // not close enough to steal it
 
-                    this.stealSlot(self, target, relevantEngagementSlot);
+                    this.stealSlot(self, relevantEngagementSlot);
                     selectedSlot = relevantEngagementSlot;
                     break;
                 }
@@ -51,15 +54,22 @@ export class EngagementSlotManager {
             return selectedSlot;
         }
 
-        stealSlot(self: Boid, target: Boid, slot: EngagementSlot): void {
+        stealSlot(self: Boid, slot: EngagementSlot): void {
+            const previousOwner = slot.claimedBy;
+            if(!previousOwner) throw new Error("Invalid state in Steal Slot");
+
             slot.claimedBy = self;
             self.blackboard.engagementCache.reservedSlot = slot;
-            target.blackboard.engagementCache.reservedSlot = undefined;
+            previousOwner.blackboard.engagementCache.reservedSlot = undefined;
         }
 
-        claimSlot(self: Boid, slot: EngagementSlot): void{
+        claimSlot(self: Boid, slot: EngagementSlot): void {
             slot.claimedBy = self;
             self.blackboard.engagementCache.reservedSlot = slot;
+
+            if(this.claimedSlots[self.id]) this.claimedSlots[self.id].claimedBy = undefined;
+
+            this.claimedSlots[self.id] = slot;
         }
 
         initAgentSlots(target: Boid): EngagementSlot[] {
