@@ -86,6 +86,9 @@ export class Boid {
                 avoidObstaclesVector: undefined,
                 otherFactionFleePoint: undefined,
                 otherFactionFleeLastCacheSeconds: undefined
+            },
+            engagementCache: {
+                reservedSlot: undefined
             }
         };
 

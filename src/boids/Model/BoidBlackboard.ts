@@ -1,10 +1,12 @@
 import Vector2 = Phaser.Math.Vector2;
 import { type BoidWithDistance } from "./Boid.ts";
+import type {EngagementSlot} from "../../engagement/slotManagement/model/EngagementSlot.ts";
 
 export type BoidBlackboard = {
     wanderAngle: number;
     targetBoid: BoidWithDistance | undefined;
     steeringCache: SteeringCache;
+    engagementCache: EngagementCache;
 }
 
 export type SteeringCache = {
@@ -18,4 +20,8 @@ export type SteeringCache = {
     avoidObstaclesVector: Vector2 | undefined;
     otherFactionFleePoint: Vector2 | undefined;
     otherFactionFleeLastCacheSeconds: number | undefined;
+}
+
+export type EngagementCache = {
+    reservedSlot: EngagementSlot | undefined;
 }

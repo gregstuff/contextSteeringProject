@@ -1,14 +1,18 @@
 import {Engagement} from "../boids/Modules/Domain/Engagement.ts";
 import {Boid} from "../boids/Model/Boid.ts";
+import {TurnCalculator} from "./domain/TurnCalculator.ts";
+import {EngagementSlotManager} from "./slotManagement/EngagementSlotManager.ts";
 
 export class EngagementController {
 
     engagements: Engagement[];
     agentEngagements: Record<string, Engagement[]>;
+    turnCalculator: TurnCalculator;
 
     constructor() {
         this.engagements = [];
         this.agentEngagements = {} as Record<string, Engagement[]>;
+        this.turnCalculator = new TurnCalculator();
     }
 
     joinEngagementForTarget(self: Boid, target: Boid): void {
@@ -35,7 +39,7 @@ export class EngagementController {
         // is the target in an engagement we can join?
         if(!!targetEngagements && targetEngagements.length > 0) {
 
-            for(let i: number = 0; i < targetEngagements.length; ++i){
+            for(let i: number = 0; i < targetEngagements.length; ++i) {
                 const canJoin = targetEngagements[i].tryJoin(self);
                 if(canJoin){
                     this.joinEngagement(self, targetEngagements[i]);
@@ -53,7 +57,9 @@ export class EngagementController {
     }
 
     joinEngagement(agent: Boid, engagement: Engagement): void {
+        if(engagement.participantSet.has(agent.id)) return;
         if(!this.agentEngagements[agent.id]) this.agentEngagements[agent.id] = [];
+
         this.agentEngagements[agent.id].push(engagement);
     }
 
@@ -68,7 +74,7 @@ export class EngagementController {
     setActiveInEngagement(self: Boid, engagement: Engagement): void {
         const relevantEngagements: Engagement[] = this.agentEngagements[self.id];
 
-        if(!relevantEngagements) return;
+        if(!relevantEngagements || !engagement.participantSet.has(self.id)) return;
 
         for(let i = 0; i < relevantEngagements.length; ++i){
             relevantEngagements[i].setAgentActivity(self, false);
@@ -78,8 +84,24 @@ export class EngagementController {
     }
 
     tick(): void {
-        // tick engagements
-        // terminate engagements with no active participants
+        for(let i = 0; i < this.engagements.length; ++i){
+            const engagement: Engagement = this.engagements[i];
+
+            if(engagement.isStale) this.removeEngagement(engagement);
+
+            this.turnCalculator.handleTurnForEngagement(this.engagements[i]);
+        }
+    }
+
+    removeEngagement(engagement: Engagement): void {
+        const relevantIndex: number =
+            this.engagements.findIndex(e=>e.id === engagement.id);
+
+        if(relevantIndex === -1) throw new Error("");
+
+        this.engagements =
+            [...this.engagements.slice(0,relevantIndex),
+                ...this.engagements.slice(relevantIndex+1,this.engagements.length)];
     }
 
 }

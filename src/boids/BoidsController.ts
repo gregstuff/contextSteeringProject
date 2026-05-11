@@ -11,6 +11,7 @@ import type {BoidsControllerConfig} from "../config/GameConfig.ts";
 import type {BoidModule} from "./Modules/BoidModule.ts";
 import {PredatorModule} from "./Modules/Impl/PredatorModule.ts";
 import {BoidModuleType} from "../constants/BoidModuleType.ts";
+import type {EngagementSlotManager} from "../engagement/slotManagement/EngagementSlotManager.ts";
 
 const CACHE_UPDATE_SECONDS = 0.2;
 
@@ -27,12 +28,14 @@ export class BoidsController {
     localEmitter: Phaser.Events.EventEmitter;
     parentEmitter: Phaser.Events.EventEmitter;
     modules: BoidModule[];
+    engagementSlotManager: EngagementSlotManager;
 
     constructor(
         graphics: Phaser.GameObjects.Graphics,
         bounds: Bounds,
         config: BoidsControllerConfig,
-        parentEmitter: Phaser.Events.EventEmitter) {
+        parentEmitter: Phaser.Events.EventEmitter,
+        engagementSlotManager: EngagementSlotManager) {
         this.graphics = graphics;
         this.bounds = bounds;
         this.config = config;
@@ -43,6 +46,7 @@ export class BoidsController {
         this.localEmitter = new Phaser.Events.EventEmitter();
         this.parentEmitter = parentEmitter;
         this.steeringCtx = undefined;
+        this.engagementSlotManager = engagementSlotManager;
         this.modules = [];
 
         this.setupEvents();
@@ -171,9 +175,9 @@ export class BoidsController {
 
         this.lastCacheUpdate = secondsSinceStart;
 
-        for(let i = 0; i < this.boids.length; ++i){
+        for(let i = 0; i < this.boids.length; ++i) {
             this.boids[i].updateCache(allEntities);
-            for(let j = 0; j < this.modules.length; ++j){
+            for(let j = 0; j < this.modules.length; ++j) {
                 this.modules[j].onCache(this.boids[i]);
             }
         }

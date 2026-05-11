@@ -7,6 +7,8 @@ import {MOUSE_MODE_LENGTH, MouseMode} from "../constants/MouseMode.ts";
 import type {Entity} from "../constants/Util.ts";
 import {ObstacleController} from "../obstacles/ObstacleController.ts";
 import {BoidEvent} from "../constants/BoidEvent.ts";
+import {EngagementController} from "../engagement/EngagementController.ts";
+import {EngagementSlotManager} from "../engagement/slotManagement/EngagementSlotManager.ts";
 
 const BOUNDS_BUFFER = 1.2;
 
@@ -17,6 +19,8 @@ export class Start extends Phaser.Scene {
     selectedBoidsControllerIndex: number;
     graphics: Phaser.GameObjects.Graphics | undefined;
     eventEmitters: Record<string, Phaser.Events.EventEmitter>;
+    engagementController: EngagementController;
+    engagementSlotManager: EngagementSlotManager;
     obstacleEmitter: Phaser.Events.EventEmitter;
     boidsControllers: BoidsController[];
     obstacleController: ObstacleController;
@@ -34,6 +38,8 @@ export class Start extends Phaser.Scene {
         this.boidsControllers = [];
         this.obstacleEmitter = new Phaser.Events.EventEmitter();
         this.obstacleController = new ObstacleController(this.obstacleEmitter, GAME_CONFIG.obstacleController);
+        this.engagementController = new EngagementController();
+        this.engagementSlotManager = new EngagementSlotManager();
     }
 
     preload(): void {
@@ -67,6 +73,8 @@ export class Start extends Phaser.Scene {
         }
 
         this.obstacleController.tick();
+
+        this.engagementController.tick();
     }
 
     drawTarget(): void {
@@ -138,7 +146,11 @@ export class Start extends Phaser.Scene {
 
             relevantEventEmitter.on(BoidEvent.DECREMENT_BOID_COUNT, this.handleDecrementBoidCounter, this);
             
-            return new BoidsController(this.graphics!, this.bounds!, bc, relevantEventEmitter);
+            return new BoidsController(
+                this.graphics!,
+                this.bounds!,
+                bc, relevantEventEmitter,
+                this.engagementSlotManager);
         });
     }
 

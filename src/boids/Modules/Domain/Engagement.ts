@@ -7,12 +7,16 @@ type ActiveBoid = {
 };
 
 export class Engagement {
+    id: string;
     participantsByFaction: Partial<Record<Faction, ActiveBoid[]>>;
     participantSet: Set<string>;
+    isStale: boolean;
 
     constructor(initiator: Boid, target: Boid) {
         this.participantsByFaction = {} as Record<Faction, ActiveBoid[]>;
         this.participantSet = new Set<string>();
+        this.isStale = false;
+        this.id = crypto.randomUUID();
 
         this.addAgent(initiator);
         this.addAgent(target, false); // add target as inactive, we don't know what their target is
@@ -21,7 +25,21 @@ export class Engagement {
     // 1vMany allowed, 2v2 and up not allowed
     tryJoin(engagementCandidate: Boid): boolean {
 
-        if(this.participantSet.has(engagementCandidate.id)) return true;
+        // if already in this engagement, ensure active
+        if(this.participantSet.has(engagementCandidate.id)){
+            const particpants: ActiveBoid[] | undefined = this.participantsByFaction[engagementCandidate.faction];
+
+            if(!particpants) throw new Error("[Engagement][tryJoin] Factions participants in invalid state, faction");
+
+            const self: ActiveBoid | undefined =
+                particpants.find((p: ActiveBoid)=>p.boid.id === engagementCandidate.id);
+
+            if(!self) throw new Error("[Engagement][tryJoin] Factions participants in invalid state, self");
+
+            self.isActive = true;
+
+            return true;
+        }
 
         const relevantFactions: Faction[] = Object.keys(this.participantsByFaction) as Faction[];
 
@@ -54,6 +72,8 @@ export class Engagement {
 
         this.participantsByFaction[agent.faction]?.push(activeCandidate);
         this.participantSet.add(agent.id);
+
+        this.checkForStale();
     }
 
     removeAgent(toRemove: Boid): void {
@@ -82,6 +102,8 @@ export class Engagement {
             [...relevantArr.slice(0, relevantIndex), ...relevantArr.slice(relevantIndex+1, relevantArr.length)];
 
         this.participantsByFaction[toRemove.faction] = resolvedArr;
+
+        this.checkForStale();
     }
 
     setAgentActivity(agent: Boid, isActive: boolean = true): void {
@@ -97,6 +119,25 @@ export class Engagement {
         if(!relevantFactionAgent) return;
 
         relevantFactionAgent.isActive = isActive;
+
+        this.checkForStale();
+    }
+
+    checkForStale(): void {
+        const keys = Object.keys(this.participantsByFaction) as Faction[];
+
+        for(let i: number = 0; i < keys.length; ++i){
+
+            const relevantParticipants: ActiveBoid[] | undefined = this.participantsByFaction[keys[i]];
+
+            if(!relevantParticipants || relevantParticipants.length == 0) continue;
+
+            const hasActive: boolean = relevantParticipants.some(rp=>rp.isActive);
+
+            if(hasActive) return; // if there's at least one active, it's not stale
+        }
+
+        this.isStale = true;
     }
 
 }
