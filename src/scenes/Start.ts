@@ -138,7 +138,8 @@ export class Start extends Phaser.Scene {
 
 
     initBoidsControllers(): void {
-        this.boidsControllers = GAME_CONFIG.boidsControllers.map(bc=>
+        this.boidsControllers = GAME_CONFIG.boidsControllers.filter(bc=>bc.enabled)
+            .map(bc=>
         {
             const relevantEventEmitter = new Phaser.Events.EventEmitter();
             this.eventEmitters[bc.id] = relevantEventEmitter;

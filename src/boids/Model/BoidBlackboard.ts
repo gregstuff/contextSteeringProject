@@ -29,4 +29,6 @@ export type EngagementCache = {
 
 export type SteeringStateMachineCache = {
     currentState: string | undefined;
+    lastStateChange: number | undefined;
+    delaySeconds: number | undefined;
 }

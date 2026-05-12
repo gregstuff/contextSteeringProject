@@ -7,7 +7,7 @@ import Vector2 = Phaser.Math.Vector2;
 const TOO_CLOSE: number = 50;
 const TOO_FAR: number = 200;
 
-export class MaintainIdealRangeForTarget implements SteeringBehaviour {
+export class EngagementMaintainIdealRangeForTarget implements SteeringBehaviour {
     steer(steeringContext: SteeringContext,
           boid: Boid, secondsSinceStart: number,
           weight: number, debugOutput: boolean): void {
