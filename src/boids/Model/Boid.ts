@@ -85,13 +85,17 @@ export class Boid {
                 avoidObstaclesCacheSeconds: undefined,
                 avoidObstaclesVector: undefined,
                 otherFactionFleePoint: undefined,
-                otherFactionFleeLastCacheSeconds: undefined
+                otherFactionFleeLastCacheSeconds: undefined,
+                avoidAgentDirections: undefined,
+                avoidAgentLastCacheSeconds: undefined
             },
             engagementCache: {
                 reservedSlot: undefined
             },
             steeringStateMachine: {
-                currentState: undefined
+                currentState: undefined,
+                delaySeconds: undefined,
+                lastStateChange: undefined
             }
         };
 

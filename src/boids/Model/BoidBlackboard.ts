@@ -21,6 +21,8 @@ export type SteeringCache = {
     avoidObstaclesVector: Vector2 | undefined;
     otherFactionFleePoint: Vector2 | undefined;
     otherFactionFleeLastCacheSeconds: number | undefined;
+    avoidAgentDirections: Vector2[] | undefined;
+    avoidAgentLastCacheSeconds: number | undefined;
 }
 
 export type EngagementCache = {
