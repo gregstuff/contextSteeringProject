@@ -19,6 +19,7 @@ export class EngagementAvoidAgents implements SteeringBehaviour {
 
         for(let i: number = 0; i < avoidDirs.length; ++i) {
             steeringContext.putInterestForVelocity(avoidDirs[i], weight);
+            steeringContext.putDangerForVelocity(avoidDirs[i].clone().scale(-1), weight);
         }
     }
 
