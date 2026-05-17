@@ -8,6 +8,7 @@ export type BoidBlackboard = {
     steeringCache: SteeringCache;
     engagementCache: EngagementCache;
     steeringStateMachine: SteeringStateMachineCache;
+    steeringIntentCache: SteeringIntentCache;
 }
 
 export type SteeringCache = {
@@ -33,4 +34,8 @@ export type SteeringStateMachineCache = {
     currentState: string | undefined;
     lastStateChange: number | undefined;
     delaySeconds: number | undefined;
+}
+
+export type SteeringIntentCache = {
+    currentState: string | undefined;
 }

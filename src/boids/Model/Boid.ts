@@ -125,6 +125,11 @@ export class Boid {
     }
 
     updateCache(allEntities: Entity[]): void {
+        // update entity distances
+        this.updateEntityDistancesToSelf(allEntities);
+    }
+
+    updateEntityDistancesToSelf(allEntities: Entity[]){
         this.closeDistanceEnemies = [];
         this.mediumDistanceEnemies = [];
         this.farDistanceEnemies = [];
