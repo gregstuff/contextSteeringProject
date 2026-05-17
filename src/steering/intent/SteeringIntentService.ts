@@ -1,5 +1,4 @@
-import {SteeringIntent} from "./constants/SteeringIntent.ts";
-import type {Boid} from "../../boids/Model/Boid.ts";
+import type {Entity} from "../../constants/Util.ts";
 
 export type SteeringIntentScore = {
     intent: SteeringIntentService,
@@ -7,5 +6,5 @@ export type SteeringIntentScore = {
 }
 
 export interface SteeringIntentService {
-    resolveSteeringIntent(allBoids: Boid[], secondsSinceStart: number): void;
+    resolveSteeringIntent(allEntities: Entity[], secondsSinceStart: number): void;
 }

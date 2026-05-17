@@ -1,8 +1,7 @@
 import {Boid, type BoidConfig} from './Model/Boid';
-import { SteeringController } from '../steering/SteeringController.js';
-import { drawBoid } from '../util/GraphicsUtils.js';
+import {SteeringController} from '../steering/SteeringController.js';
+import {drawBoid} from '../util/GraphicsUtils.js';
 import type {Bounds} from "../model/Bounds.ts";
-import Vector2 = Phaser.Math.Vector2;
 import type {SteeringContext} from "../steering/model/SteeringContext.ts";
 import Phaser from "phaser";
 import type {Entity} from "../constants/Util.ts";
@@ -13,6 +12,10 @@ import {PredatorModule} from "./Modules/Impl/PredatorModule.ts";
 import {BoidModuleType} from "../constants/BoidModuleType.ts";
 import type {EngagementSlotManager} from "../engagement/slotManagement/EngagementSlotManager.ts";
 import type {EngagementController} from "../engagement/EngagementController.ts";
+import type {SteeringIntentService} from "../steering/intent/SteeringIntentService.ts";
+import {SteeringIntentServiceType} from "../steering/intent/constants/SteeringIntentServiceType.ts";
+import Vector2 = Phaser.Math.Vector2;
+import EngagementSteeringIntent from "../steering/intent/impl/EngagementSteeringIntent.ts";
 
 const CACHE_UPDATE_SECONDS = 0.2;
 
@@ -24,6 +27,7 @@ export class BoidsController {
     config: BoidsControllerConfig;
     targetPos: Vector2 | undefined;
     steeringController: SteeringController;
+    steeringIntentService: SteeringIntentService | undefined;
     lastCacheUpdate: number;
     steeringCtx: SteeringContext | undefined;
     localEmitter: Phaser.Events.EventEmitter;
@@ -51,6 +55,7 @@ export class BoidsController {
         this.parentEmitter = parentEmitter;
         this.steeringCtx = undefined;
         this.engagementSlotManager = engagementSlotManager;
+        this.steeringIntentService = this.resolveSteeringIntent();
         this.modules = [];
 
         this.setupEvents();
@@ -61,6 +66,7 @@ export class BoidsController {
     tick(allEntities: Entity[], secondsSinceStart: number): void {
         this.updateBoidReferences(allEntities, secondsSinceStart);
         this.updateBoids(secondsSinceStart);
+        this.steeringIntentService?.resolveSteeringIntent(allEntities, secondsSinceStart);
         this.drawBoids();
         this.drawDebug();
     }
@@ -197,6 +203,14 @@ export class BoidsController {
                     break;
             }
         }
+    }
+
+    resolveSteeringIntent() : SteeringIntentService | undefined {
+        const steeringIntentServiceType = this.config.steeringConfig.steeringIntent;
+        if(steeringIntentServiceType === SteeringIntentServiceType.ENGAGEMENT){
+            return new EngagementSteeringIntent();
+        }
+        return undefined;
     }
 
 }

@@ -1,9 +1,10 @@
 import type {SteeringIntentService} from "../SteeringIntentService.ts";
 import {SteeringIntent} from "../constants/SteeringIntent.ts";
-import type {Boid, BoidWithDistance} from "../../../boids/Model/Boid.ts";
+import {Boid, type BoidWithDistance} from "../../../boids/Model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
 import {DistanceBand, distanceToDistanceBand} from "../../../constants/DistanceBand.ts";
 import type {EngagementSlot} from "../../../engagement/slotManagement/model/EngagementSlot.ts";
+import type {Entity} from "../../../constants/Util.ts";
 
 const CACHE_SECONDS = 0.1;
 
@@ -52,7 +53,7 @@ class EngagementSteeringIntent implements SteeringIntentService {
         this.lastCacheSeconds = 0;
     }
 
-    resolveSteeringIntent(allBoids: Boid[], secondsSinceStart: number): void {
+    resolveSteeringIntent(allEntities: Entity[], secondsSinceStart: number): void {
 
         if(this.lastCacheSeconds + CACHE_SECONDS > secondsSinceStart) return;
 
@@ -60,8 +61,12 @@ class EngagementSteeringIntent implements SteeringIntentService {
         const presenceByTarget = new Map<string, ProjectedPresence[]>();
 
         // build agent to agent reference data
-        for(let i: number = 0; i < allBoids.length; ++i) {
-            const relevantBoid: Boid = allBoids[i];
+        for(let i: number = 0; i < allEntities.length; ++i) {
+            const relevantEntity: Entity = allEntities[i];
+
+            if(!(relevantEntity instanceof Boid)) continue;
+
+            const relevantBoid = relevantEntity as Boid;
 
             const relevantEngagementSlot: EngagementSlot | undefined
                 = relevantBoid.blackboard.engagementCache.reservedSlot;
@@ -122,9 +127,13 @@ class EngagementSteeringIntent implements SteeringIntentService {
             };
         }
 
-        for(let i: number = 0; i < allBoids.length; ++i) {
+        for(let i: number = 0; i < allEntities.length; ++i) {
 
-            const relevantBoid: Boid = allBoids[i];
+            const relevantEntity: Entity = allEntities[i];
+
+            if(!(relevantEntity instanceof Boid)) continue;
+
+            const relevantBoid = relevantEntity as Boid;
 
             const relevantEngagementSlot: EngagementSlot | undefined
                 = relevantBoid.blackboard.engagementCache.reservedSlot;

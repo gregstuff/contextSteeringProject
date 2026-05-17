@@ -96,6 +96,9 @@ export class Boid {
                 currentState: undefined,
                 delaySeconds: undefined,
                 lastStateChange: undefined
+            },
+            steeringIntentCache: {
+                currentState: undefined
             }
         };
 

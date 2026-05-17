@@ -3,6 +3,7 @@ import {SteeringBehaviourType} from "../steering/constants/SteeringBehaviourType
 import {BoidModuleType} from "../constants/BoidModuleType.ts";
 import {SteeringPipelineType} from "../constants/SteeringPipelineType.ts";
 import {StateMachineType} from "../steering/stateMachine/constants/StateMachineType.ts";
+import {SteeringIntentServiceType} from "../steering/intent/constants/SteeringIntentServiceType.ts";
 
 export const GAME_CONFIG : GameConfig = {
     boidsControllers: [
@@ -93,7 +94,8 @@ export const GAME_CONFIG : GameConfig = {
             faction: Faction.DEFENDER,
             steeringConfig: {
                 pipelineType: SteeringPipelineType.STATE_MACHINE,
-                stateMachine: StateMachineType.ENGAGEMENT
+                stateMachine: StateMachineType.ENGAGEMENT,
+                steeringIntent: SteeringIntentServiceType.ENGAGEMENT
             },
             modules: [
                 {
@@ -112,7 +114,8 @@ export const GAME_CONFIG : GameConfig = {
             faction: Faction.AGGRESSOR,
             steeringConfig: {
                 pipelineType: SteeringPipelineType.STATE_MACHINE,
-                stateMachine: StateMachineType.ENGAGEMENT
+                stateMachine: StateMachineType.ENGAGEMENT,
+                steeringIntent: SteeringIntentServiceType.ENGAGEMENT
             },
             modules: [
                 {
@@ -158,6 +161,7 @@ export interface SteeringConfig {
     pipelineType: SteeringPipelineType;
     behaviourConfigs?: SteeringBehaviourConfig[];
     stateMachine?: StateMachineType;
+    steeringIntent?: SteeringIntentServiceType;
 }
 
 export interface ObstacleConfig {
