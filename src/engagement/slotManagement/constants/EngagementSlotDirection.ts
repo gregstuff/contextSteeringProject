@@ -1,4 +1,5 @@
 import Vector2 = Phaser.Math.Vector2;
+import Phaser from "phaser";
 
 export enum EngagementSlotDirection {
     NORTH,

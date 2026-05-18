@@ -5,6 +5,7 @@ import Vector2 = Phaser.Math.Vector2;
 import {DistanceBand, distanceToDistanceBand} from "../../../constants/DistanceBand.ts";
 import type {EngagementSlot} from "../../../engagement/slotManagement/model/EngagementSlot.ts";
 import type {Entity} from "../../../constants/Util.ts";
+import Phaser from "phaser";
 
 const CACHE_SECONDS = 0.1;
 

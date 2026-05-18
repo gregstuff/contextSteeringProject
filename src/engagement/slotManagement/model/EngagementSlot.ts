@@ -1,5 +1,6 @@
 import {directionToVector, type EngagementSlotDirection} from "../constants/EngagementSlotDirection.ts";
 import type {Boid} from "../../../boids/Model/Boid.ts";
+import Phaser from "phaser";
 import Vector2 = Phaser.Math.Vector2;
 
 const SLOT_DIST: number = 30;

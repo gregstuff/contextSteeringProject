@@ -2,6 +2,7 @@ import type {SteeringBehaviour} from "../../SteeringBehaviour.ts";
 import type {SteeringContext} from "../../../model/SteeringContext.ts";
 import type {Boid} from "../../../../boids/Model/Boid.ts";
 import Vector2 = Phaser.Math.Vector2;
+import Phaser from "phaser";
 
 const CACHE_SECONDS: number = 0.1;
 const AVOIDANCE_RADIUS: number = 200;

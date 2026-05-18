@@ -8,6 +8,7 @@ import {
     DistanceForDistanceBand,
     distanceToDistanceBand
 } from "../../../../constants/DistanceBand.ts";
+import Phaser from "phaser";
 
 export class EngagementMaintainRangeForTarget implements SteeringBehaviour {
 

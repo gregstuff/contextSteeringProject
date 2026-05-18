@@ -88,7 +88,7 @@ export const GAME_CONFIG : GameConfig = {
             enabled: true,
             initialCount: 0,
             size: 15,
-            color: 0xff0000,
+            color: 0xffffff,
             maximumSpeed: 4,
             maximumForce: 0.2,
             faction: Faction.DEFENDER,

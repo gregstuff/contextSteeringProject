@@ -3,6 +3,7 @@ import type {SteeringContext} from "../../../model/SteeringContext.ts";
 import type {Boid} from "../../../../boids/Model/Boid.ts";
 import type {EngagementSlot} from "../../../../engagement/slotManagement/model/EngagementSlot.ts";
 import Vector2 = Phaser.Math.Vector2;
+import Phaser from "phaser";
 
 export const ORBIT_DIRECTION = ['CW', 'CCW'] as const;
 export type OrbitDirection = typeof ORBIT_DIRECTION[number];
