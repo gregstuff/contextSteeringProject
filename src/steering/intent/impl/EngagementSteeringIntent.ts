@@ -53,9 +53,12 @@ class EngagementSteeringIntent implements SteeringIntentService {
         this.lastCacheSeconds = 0;
     }
 
-    resolveSteeringIntent(allEntities: Entity[], secondsSinceStart: number): void {
+    resolveSteeringIntent(allEntities: Entity[],
+                          localBoids: Boid[], secondsSinceStart: number): void {
 
         if(this.lastCacheSeconds + CACHE_SECONDS > secondsSinceStart) return;
+
+        this.lastCacheSeconds = secondsSinceStart;
 
         const boidTargetContexts = {} as Partial<Record<string, TargetRelativeContext>>;
         const presenceByTarget = new Map<string, ProjectedPresence[]>();
@@ -127,13 +130,9 @@ class EngagementSteeringIntent implements SteeringIntentService {
             };
         }
 
-        for(let i: number = 0; i < allEntities.length; ++i) {
+        for(let i: number = 0; i < localBoids.length; ++i) {
 
-            const relevantEntity: Entity = allEntities[i];
-
-            if(!(relevantEntity instanceof Boid)) continue;
-
-            const relevantBoid = relevantEntity as Boid;
+            const relevantBoid: Boid = localBoids[i];
 
             const relevantEngagementSlot: EngagementSlot | undefined
                 = relevantBoid.blackboard.engagementCache.reservedSlot;

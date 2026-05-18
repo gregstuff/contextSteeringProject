@@ -14,8 +14,9 @@ import type {EngagementSlotManager} from "../engagement/slotManagement/Engagemen
 import type {EngagementController} from "../engagement/EngagementController.ts";
 import type {SteeringIntentService} from "../steering/intent/SteeringIntentService.ts";
 import {SteeringIntentServiceType} from "../steering/intent/constants/SteeringIntentServiceType.ts";
-import Vector2 = Phaser.Math.Vector2;
 import EngagementSteeringIntent from "../steering/intent/impl/EngagementSteeringIntent.ts";
+import Vector2 = Phaser.Math.Vector2;
+import {EngagementModule} from "./Modules/Impl/EngagementModule.ts";
 
 const CACHE_UPDATE_SECONDS = 0.2;
 
@@ -65,8 +66,8 @@ export class BoidsController {
 
     tick(allEntities: Entity[], secondsSinceStart: number): void {
         this.updateBoidReferences(allEntities, secondsSinceStart);
+        this.steeringIntentService?.resolveSteeringIntent(allEntities, this.boids, secondsSinceStart);
         this.updateBoids(secondsSinceStart);
-        this.steeringIntentService?.resolveSteeringIntent(allEntities, secondsSinceStart);
         this.drawBoids();
         this.drawDebug();
     }
@@ -200,6 +201,9 @@ export class BoidsController {
             switch(moduleConfig.moduleType){
                 case BoidModuleType.PREDATOR:
                     this.modules.push(new PredatorModule());
+                    break;
+                case BoidModuleType.ENGAGEMENT:
+                    this.modules.push(new EngagementModule(this.engagementSlotManager));
                     break;
             }
         }

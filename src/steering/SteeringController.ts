@@ -21,9 +21,8 @@ import {EngagementStateMachine} from "./stateMachine/impl/EngagementStateMachine
 import {OtherFactionSeekingBehaviour} from "./behaviours/impl/OtherFactionSeekingBehaviour.ts";
 import {EngagementAvoidAgents} from "./behaviours/impl/Engagement/EngagementAvoidAgents.ts";
 import {EngagementOrbitTarget} from "./behaviours/impl/Engagement/EngagementOrbitTarget.ts";
-import {
-    EngagementMaintainIdealRangeForTarget
-} from "./behaviours/impl/Engagement/EngagementMaintainIdealRangeForTarget.ts";
+import {DistanceBand} from "../constants/DistanceBand.ts";
+import {EngagementMaintainRangeForTarget} from "./behaviours/impl/Engagement/EngagementMaintainRangeForTarget.ts";
 
 export class SteeringController {
 
@@ -55,10 +54,10 @@ export class SteeringController {
             [SteeringBehaviourType.ENGAGEMENT_AVOID_AGENTS]: new EngagementAvoidAgents(),
             [SteeringBehaviourType.ENGAGEMENT_ORBIT_TARGET_CCW]: new EngagementOrbitTarget('CCW'),
             [SteeringBehaviourType.ENGAGEMENT_ORBIT_TARGET_CW]: new EngagementOrbitTarget('CW'),
-            [SteeringBehaviourType.ENGAGEMENT_MAINTAIN_IDEAL_RANGE]: new EngagementMaintainIdealRangeForTarget()
+            [SteeringBehaviourType.ENGAGEMENT_MAINTAIN_CLOSE_RANGE]: new EngagementMaintainRangeForTarget(DistanceBand.CLOSE),
+            [SteeringBehaviourType.ENGAGEMENT_MAINTAIN_MEDIUM_RANGE]: new EngagementMaintainRangeForTarget(DistanceBand.MID),
+            [SteeringBehaviourType.ENGAGEMENT_MAINTAIN_FAR_RANGE]: new EngagementMaintainRangeForTarget(DistanceBand.FAR),
             //
-
-
         };
     }
 
